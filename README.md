@@ -1,1 +1,1 @@
-# BarChartGenerator
+# ColumnChartGenerator
