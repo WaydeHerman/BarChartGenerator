@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Column Chart Viz</title>
+    <style>
+      body {
+        margin: 0;
+        font-size: 14px;
+      }
+      .charts {
+        margin: 0 24px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+        grid-gap: 10px;
+      }
+
+      .chart {
+        margin-bottom: 24px;
+      }
+    </style>
+    <link
+      href="https://fonts.googleapis.com/css?family=Nunito:400,700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="column-chart-viz.css" />
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://d3js.org/d3-array.v2.min.js"></script>
+    <script src="column-chart-viz.js"></script>
+  </head>
+
+  <body>
+    <div class="charts">
+      <div class="chart"></div>
+      <div class="chart"></div>
+      <div class="chart"></div>
+    </div>
+
+    <script>
+     d3.json("sample.json").then(function(data) {
+             columnChartViz({
+        el: document.getElementsByClassName("chart")[0],
+        data,
+        columnBars: "Years",
+        columnGrouping: "Age",
+        columnMeasure: "Value",
+        operationMeasure: "avg",
+        paletteFill: "single",
+        positionLegend: "top",
+        sort: "atoz",
+        labelX: "axis-x-label",
+        labelY: "axis-y-label"
+      }); 
+     })
+
+
+      /* barChartViz({
+        el: document.getElementsByClassName("chart")[1],
+        data,
+        columnBars: "State",
+        operationMeasure: "sum",
+        columnMeasure: "Value",
+        paletteFill: "full",
+        shapeBarEnd: "square",
+        sortOrder: "atoz"
+      });
+       barChartViz({
+        el: document.getElementsByClassName("chart")[2],
+        data,
+        columnGrouping: "Years",
+        columnBars: "Age",
+        operationMeasure: "avg",
+        columnMeasure: "Value",
+        paletteFill: "pattern",
+        shapeBarEnd: "curve",
+        positionLegend: "top",
+        sortOrder: "atoz"
+      }); */
+    </script>
+  </body>
+</html>
