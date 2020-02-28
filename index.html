@@ -13,7 +13,7 @@
       .charts {
         margin: 0 24px;
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+        grid-template-rows: repeat(auto-fill, minmax(400px, 1fr));
         grid-gap: 10px;
       }
 
@@ -40,18 +40,30 @@
 
     <script>
      d3.json("sample.json").then(function(data) {
-             columnChartViz({
+        columnChartViz({
         el: document.getElementsByClassName("chart")[0],
         data,
         columnBars: "Years",
         columnGrouping: "Age",
         columnMeasure: "Value",
-        operationMeasure: "avg",
+        operationMeasure: "sum",
         paletteFill: "single",
-        positionLegend: "top",
+        positionLegend: "bottom",
         sort: "atoz",
         labelX: "axis-x-label",
         labelY: "axis-y-label"
+      }); 
+        columnChartViz({
+        el: document.getElementsByClassName("chart")[1],
+        data,
+        columnBars: "State",
+        columnMeasure: "Value",
+        operationMeasure: "avg",
+        paletteFill: "pattern",
+        positionLegend: "top",
+        sort: "ztoa",
+        labelXAxis: "test X",
+        labelYAxis: "test Y"
       }); 
      })
 

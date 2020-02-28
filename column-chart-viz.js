@@ -61,6 +61,23 @@ function columnChartViz(option) {
     ]
   };
 
+  const patternImages = {
+    "pattern-fill-0":
+      "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Crect fill='none' stroke='%23119eb9' stroke-width='3' width='100%25' height='100%25' %3E%3C/rect%3E%3C/svg%3E",
+    "pattern-fill-1":
+      "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Crect fill='none' stroke='%23119eb9' stroke-width='2' width='100%25' height='100%25' transform='rotate(45)' %3E%3C/rect%3E%3C/svg%3E",
+    "pattern-fill-2":
+      "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath stroke='%23119eb9' stroke-width='2' fill='none' d='M0,0L5,5L10,0L5,5L0,0Z' %3E%3C/path%3E%3C/svg%3E",
+    "pattern-fill-3":
+      "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath stroke='%23119eb9' stroke-width='2' fill='none' d='M0,0L10,10' %3E%3C/path%3E%3Cpath stroke='%23119eb9' stroke-width='2' fill='none' d='M10,0L0,10' %3E%3C/path%3E%3C/svg%3E",
+    "pattern-fill-4":
+      "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Cpath fill='%23119eb9' d='M0,0L10,10L10,0L0,10Z'%3E%3C/path%3E%3C/svg%3E",
+    "pattern-fill-5":
+      "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10'%3E%3Ccircle fill='%23119eb9' cx='-5' cy='0' r='2'%3E%3C/circle%3E%3Ccircle fill='%23119eb9' cx='5' cy='0' r='2'%3E%3C/circle%3E%3Ccircle fill='%23119eb9' cx='0' cy='-5' r='2'%3E%3C/circle%3E%3Ccircle fill='%23119eb9' cx='0' cy='5' r='2'%3E%3C/circle%3E%3C/svg%3E",
+    "pattern-fill-6":
+      "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='5' height='5'%3E%3Cpath fill='%23119eb9' d='M-10,0L0,10L10,0L0,-10z'%3E%3C/path%3E%3Ccircle fill='white' cx='-5' cy='0' r='2'%3E%3C/circle%3E%3Ccircle fill='white' cx='5' cy='0' r='2'%3E%3C/circle%3E%3Ccircle fill='white' cx='0' cy='-5' r='2'%3E%3C/circle%3E%3Ccircle fill='white' cx='0' cy='5' r='2'%3E%3C/circle%3E%3C/svg%3E"
+  };
+
   var margin = { top: 50, right: 75, bottom: 50, left: 50 };
   bar_width = 10;
 
@@ -73,7 +90,7 @@ function columnChartViz(option) {
   const operationMeasure = option.operationMeasure || "avg";
   const paletteFill = option.paletteFill || "full";
   const positionLegend = option.positionLegend || "top";
-  const sort = option.sortOrder || "atoz";
+  const sort = option.sort || "atoz";
   const labelXAxis = option.labelXAxis || "X Axis";
   const labelYAxis = option.labelYAxis || "Y Axis";
 
@@ -151,12 +168,37 @@ function columnChartViz(option) {
   // Render chart
   const container = d3.select(el).classed("column-chart-viz", true);
 
+  let legendContainer;
+  if (positionLegend === "top") {
+    legendContainer = container.insert("div", ".chart-container");
+  }
+
   var chartContainer = container
     .append("svg")
     .attr("width", svg_width)
     .attr("height", svg_height)
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+  if (paletteFill === "pattern") {
+    colors.pattern.forEach(function(v) {
+      chartContainer
+        .append("defs")
+        .append("pattern")
+        .attr("id", v)
+        .attr("patternUnits", "userSpaceOnUse")
+        .attr("width", 10)
+        .attr("height", 10)
+        .append("image")
+        .attr("xlink:href", patternImages[v])
+        .attr("width", 10)
+        .attr("height", 10);
+    });
+  }
+
+  if (positionLegend === "bottom") {
+    legendContainer = container.append("div");
+  }
 
   x0 = d3
     .scaleBand()
@@ -185,6 +227,7 @@ function columnChartViz(option) {
       .data(data)
       .join("g")
       .attr("transform", d => `translate(${x0(d.key)},0)`)
+      .attr("class", "test")
       .selectAll("rect")
       .data(function(d) {
         d.values.forEach(function(v) {
@@ -193,7 +236,7 @@ function columnChartViz(option) {
         return d.values;
       })
       .join("rect")
-      .each(function(d) {
+      /*.each(function(d) {
         d3.select(this.parentNode)
           .append("text")
           .datum(d)
@@ -202,15 +245,24 @@ function columnChartViz(option) {
           .attr("y", function(d) {
             return y(0) - 5;
           })
-          .text(d.key)
+          .text(formatNumber(d.value))
           .attr("opacity", 0);
-      })
+      })*/
       .attr("x", d => x1(d.key))
       .attr("y", d => y(0))
       .attr("width", bar_width)
       .attr("height", d => 0)
       .attr("fill", function(d) {
-        return colorScale(d.key);
+        if (paletteFill === "pattern") {
+          return "url(#" + colorScale(d.key) + ")";
+        } else {
+          return colorScale(d.key);
+        }
+      })
+      .attr("class", function() {
+        if (paletteFill === "pattern") {
+          return "pattern-fill";
+        }
       })
       .on("mouseover", function(d) {
         showTooltip(d, data);
@@ -325,13 +377,6 @@ function columnChartViz(option) {
   }
 
   // Render legend
-
-  let legendContainer;
-  if (positionLegend === "top") {
-    legendContainer = container.insert("div", ".chart-container");
-  } else {
-    legendContainer = container.append("div");
-  }
   legendContainer
     .attr("class", "legend-container")
     .selectAll(".legend-item")

@@ -68,8 +68,8 @@
 }
 
 .pattern-fill {
-  background-repeat: repeat;
-  border: solid 1px #119eb9;
+  stroke: #119eb9;
+  stroke-width: 1px;
 }
 
 .pattern-fill-0 {
